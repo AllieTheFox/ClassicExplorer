@@ -40,6 +40,32 @@ WCHAR CAddressBarHostBand::GetAddressAccelerator()
 
 	return L'\0';
 }
+/*
+ * CanRenderComposited: Indicates whether the Desk Band can render with DWM composition.
+ */
+STDMETHODIMP CAddressBarHostBand::CanRenderComposited(BOOL* pfCanRenderComposited)
+{
+	*pfCanRenderComposited = TRUE;
+	return S_OK;
+}
+
+/*
+ * SetCompositionState: Informs the Desk Band of the current DWM composition state.
+ */
+STDMETHODIMP CAddressBarHostBand::SetCompositionState(BOOL fCompositionEnabled)
+{
+	UNREFERENCED_PARAMETER(fCompositionEnabled);
+	return S_OK;
+}
+
+/*
+ * GetCompositionState: Queries the Desk Band for its DWM composition capabilities.
+ */
+STDMETHODIMP CAddressBarHostBand::GetCompositionState(BOOL* pfCompositionEnabled)
+{
+	*pfCompositionEnabled = TRUE;
+	return S_OK;
+}
 
 /*
  * GetBandInfo: This is queried by the Shell and must return relevant information about
@@ -156,7 +182,7 @@ STDMETHODIMP CAddressBarHostBand::SetSite(IUnknown *pUnkSite)
 		m_addressBar.DestroyWindow();
 	}
 
-	// If pUnkSite is not NULL, then the site is being set.
+	// If pUnkSite is not nullptr, then the site is being set.
 	// Otherwise, the site is being removed.
 	if (pUnkSite) // hook:
 	{
@@ -165,7 +191,7 @@ STDMETHODIMP CAddressBarHostBand::SetSite(IUnknown *pUnkSite)
 			return E_FAIL;
 		}
 
-		HWND hWndParent = NULL;
+		HWND hWndParent = nullptr;
 
 		CComQIPtr<IOleWindow> pOleWindow = pUnkSite;
 		if (pOleWindow)
@@ -179,7 +205,7 @@ STDMETHODIMP CAddressBarHostBand::SetSite(IUnknown *pUnkSite)
 		m_parentWindow = GetAncestor(hWndParent, GA_ROOT);
 
 		// Create the toolbar window proper:
-		m_addressBar.Create(hWndParent, NULL, NULL, WS_CHILD);
+		m_addressBar.Create(hWndParent, nullptr, nullptr, WS_CHILD);
 		//m_addressBar.CreateBand(hWndParent);
 
 		if (!m_addressBar.IsWindow())
@@ -223,8 +249,8 @@ STDMETHODIMP CAddressBarHostBand::SetSite(IUnknown *pUnkSite)
 	}
 	else // unhook:
 	{
-		m_pSite = NULL;
-		m_parentWindow = NULL;
+		m_pSite = nullptr;
+		m_parentWindow = nullptr;
 	}
 
 	return S_OK;
@@ -293,7 +319,7 @@ STDMETHODIMP CAddressBarHostBand::TranslateAcceleratorIO(MSG *pMsg)
 
 			if (lstrcmpiW(szInput, szAccelerator) == 0)
 			{
-				//MessageBoxW(NULL, L"FUCK", L"KILL YOURSELF", MB_OK);
+				//MessageBoxW(nullptr, L"FUCK", L"KILL YOURSELF", MB_OK);
 				::SetFocus(m_addressBar.m_comboBoxEditCtl);
 				return S_OK;
 			}

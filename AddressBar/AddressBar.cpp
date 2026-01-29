@@ -59,16 +59,16 @@ LRESULT CAddressBar::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHa
 	m_toolbar = CreateWindowEx(
 		WS_EX_TOOLWINDOW,
 		WC_COMBOBOXEXW,
-		NULL,
+		nullptr,
 		WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE | WS_TABSTOP | CCS_NODIVIDER | CCS_NOMOVEY | CBS_OWNERDRAWFIXED,
 		0, 0, 500, 250,
 		m_hWnd,
-		NULL,
+		nullptr,
 		moduleInstance,
-		NULL
+		nullptr
 	);
 
-	if (m_toolbar == NULL)
+	if (m_toolbar == nullptr)
 	{
 		return E_FAIL;
 	}
@@ -125,15 +125,10 @@ LRESULT CAddressBar::CreateGoButton()
 
 	const TBBUTTON goButtonInfo[] = { {0, 1, TBSTATE_ENABLED, 0} };
 	HINSTANCE resourceInstance = _AtlBaseModule.GetResourceInstance();
-	int go_inactive_bitmap = IDB_10_GO_INACTIVE;
-	int go_active_bitmap = IDB_10_GO_ACTIVE;
 
-	if (m_theme == CLASSIC_EXPLORER_MEMPHIS)
-	{
-		go_inactive_bitmap = IDB_MEMPHIS_GO_INACTIVE;
-		go_active_bitmap = IDB_MEMPHIS_GO_ACTIVE;
-	}
-	else if (m_theme == CLASSIC_EXPLORER_2K)
+	int go_inactive_bitmap = IDB_2K_GO_INACTIVE;
+	int go_active_bitmap = IDB_2K_GO_ACTIVE;
+	if (m_theme == CLASSIC_EXPLORER_2K)
 	{
 		go_inactive_bitmap = IDB_2K_GO_INACTIVE;
 		go_active_bitmap = IDB_2K_GO_ACTIVE;
@@ -147,7 +142,7 @@ LRESULT CAddressBar::CreateGoButton()
 	m_himlGoInactive = ImageList_LoadImageW(
 		resourceInstance,
 		MAKEINTRESOURCEW(go_inactive_bitmap),
-		m_theme == CLASSIC_EXPLORER_MEMPHIS ? 18 : 20,
+		20,
 		0,
 		RGB(0, 0, 0),
 		IMAGE_BITMAP,
@@ -157,7 +152,7 @@ LRESULT CAddressBar::CreateGoButton()
 	m_himlGoActive = ImageList_LoadImageW(
 		resourceInstance,
 		MAKEINTRESOURCEW(go_active_bitmap),
-		m_theme == CLASSIC_EXPLORER_MEMPHIS ? 18 : 20,
+		20,
 		0,
 		RGB(0, 0, 0),
 		IMAGE_BITMAP,
@@ -167,7 +162,7 @@ LRESULT CAddressBar::CreateGoButton()
 	m_goButton = CreateWindowEx(
 		WS_EX_TOOLWINDOW,
 		TOOLBARCLASSNAMEW,
-		NULL,
+		nullptr,
 		WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS |
 		CCS_NODIVIDER | CCS_NOPARENTALIGN | CCS_NORESIZE,
 		0,
@@ -175,9 +170,9 @@ LRESULT CAddressBar::CreateGoButton()
 		50,
 		50,
 		m_toolbar,
-		NULL,
+		nullptr,
 		moduleInstance,
-		NULL
+		nullptr
 	);
 
 	if (!m_goButton)
@@ -340,7 +335,7 @@ LRESULT CALLBACK CAddressBar::ComboboxSubclassProc(HWND hWnd, UINT uMsg, WPARAM 
 			::GetWindowRect(self->m_comboBox, &rcComboBox);
 			::SetWindowPos(
 				self->m_goButton,
-				NULL,
+				nullptr,
 				newWidth - goButtonWidth - goRightMargin,
 				(rcComboBox.bottom - rcComboBox.top - goButtonHeight) / 2,
 				goButtonWidth,
@@ -359,7 +354,7 @@ LRESULT CALLBACK CAddressBar::ComboboxSubclassProc(HWND hWnd, UINT uMsg, WPARAM 
 		OffsetWindowOrgEx((HDC)wParam, pt.x, pt.y, &ptOrig);
 
 		LRESULT result = SendMessage(parentWindow, WM_ERASEBKGND, wParam, 0);
-		SetWindowOrgEx((HDC)wParam, ptOrig.x, ptOrig.y, NULL);
+		SetWindowOrgEx((HDC)wParam, ptOrig.x, ptOrig.y, nullptr);
 
 		return result;
 	}
@@ -405,7 +400,7 @@ HRESULT CAddressBar::HandleNavigate()
  */
 HRESULT CAddressBar::RefreshCurrentAddress()
 {
-	HRESULT hr = NULL;
+	HRESULT hr = S_OK;
 	PIDLIST_ABSOLUTE pidlCurrentFolder;
 	CComPtr<IKnownFolderManager> pKnownFolderManager;
 	CComPtr<IKnownFolder> pKnownFolder;
@@ -583,7 +578,7 @@ HRESULT STDMETHODCALLTYPE CAddressBar::ShowFileNotFoundError(HRESULT hRet)
 HRESULT CAddressBar::Execute()
 {
 	HRESULT hr = E_FAIL;
-	PIDLIST_RELATIVE parsedPidl;
+	PIDLIST_RELATIVE parsedPidl = nullptr;
 	
 	// have to be initialised before goto cleanup...
 	CComPtr<IShellFolder> pShellFolder;
@@ -656,13 +651,13 @@ HRESULT CAddressBar::ParseAddress(PIDLIST_RELATIVE *pidlOut)
 {
 	HRESULT hr = E_FAIL;
 
-	ULONG eaten = NULL, attributes = NULL;
-	HWND topLevelWindow = NULL;
-	PIDLIST_RELATIVE relativePidl = NULL;
+	ULONG eaten = 0, attributes = 0;
+	HWND topLevelWindow = nullptr;
+	PIDLIST_RELATIVE relativePidl = nullptr;
 
 	// Must be initialised before any gotos...
-	CComPtr<IShellFolder> pCurrentFolder = NULL;
-	PIDLIST_ABSOLUTE currentPidl = NULL;
+	CComPtr<IShellFolder> pCurrentFolder = nullptr;
+	PIDLIST_ABSOLUTE currentPidl = nullptr;
 
 	// TODO: what is IBrowserService, how to replicate with newer code?
 	// I think it is only used for the current PIDL.
@@ -675,7 +670,7 @@ HRESULT CAddressBar::ParseAddress(PIDLIST_RELATIVE *pidlOut)
 	if (!GetCurrentAddressText(input))
 		return E_FAIL;
 
-	int addressLength = (wcschr(input, L'%')) ? ::ExpandEnvironmentStringsW(input, NULL, 0) : 0;
+	int addressLength = (wcschr(input, L'%')) ? ::ExpandEnvironmentStringsW(input, nullptr, 0) : 0;
 	if (
 		addressLength <= 0 ||
 		!address.Allocate(addressLength + 1) ||
@@ -698,7 +693,7 @@ HRESULT CAddressBar::ParseAddress(PIDLIST_RELATIVE *pidlOut)
 
 	hr = psfDesktop->BindToObject(
 		currentPidl,
-		NULL,
+		nullptr,
 		IID_IShellFolder,
 		(void **)&pCurrentFolder
 	);
@@ -707,7 +702,7 @@ HRESULT CAddressBar::ParseAddress(PIDLIST_RELATIVE *pidlOut)
 
 	hr = pCurrentFolder->ParseDisplayName(
 		topLevelWindow,
-		NULL,
+		nullptr,
 		address,
 		&eaten,
 		&relativePidl,
@@ -724,7 +719,7 @@ HRESULT CAddressBar::ParseAddress(PIDLIST_RELATIVE *pidlOut)
 		// Used in case a relative path could not be parsed:
 		hr = psfDesktop->ParseDisplayName(
 			topLevelWindow,
-			NULL,
+			nullptr,
 			address,
 			&eaten,
 			pidlOut,
@@ -806,7 +801,7 @@ HRESULT CAddressBar::GetCurrentFolderPidl(PIDLIST_ABSOLUTE *pidlOut)
  */
 HRESULT CAddressBar::GetCurrentFolderName(WCHAR *pszName, long length)
 {
-	HRESULT hr = NULL;
+	HRESULT hr = S_OK;
 
 	CComPtr<IShellFolder> pShellFolder;
 	PCITEMID_CHILD pidlChild;
